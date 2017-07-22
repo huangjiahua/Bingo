@@ -1,6 +1,6 @@
-void print_map(void);
+void print_map(const std::vector<char>&);
 void get_command(void);
-void check_game(void);
+bool check_game(void);
 void end(void);
 
 using v_index = std::vector<char>::size_type;
@@ -10,8 +10,12 @@ private:
     std::vector<v_index> territory;
     char chessman;
 public:
-    bool place(v_index);
-    v_index current() {return territory[territory.size() - 1]}
-}
+    Player(const char sign) :
+        chessman(sign) {}
+    bool place(const v_index, std::vector<char> &);
+    char getChess() {return chessman;}
+    v_index current() {return territory[territory.size() - 1];}
+};
 
-vector<char> map{0, 1, 2, 3, 4, 5, 6, 7, 8};
+std::vector<char> map{'0', '1', '2', '3',
+    '4', '5', '6', '7', '8'};
