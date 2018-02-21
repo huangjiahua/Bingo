@@ -1,3 +1,4 @@
-#GAME BINGO#
+# Bingo
+huangjiahua
 ***
-
+A simple Bingo game.
