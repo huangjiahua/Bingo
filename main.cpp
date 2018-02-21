@@ -9,29 +9,34 @@ using namespace std;
 
 int main()
 {
+    // initialize players and timer
+    Player p1{'O'}, p2{'X'};
+    int timer = 0;
     // print the original # map
     print_map(map);
     while (true) {
         // get the command from the player
-        get_command();
+        (timer % 2 == 0) ? get_command(timer, p1, map)
+            : get_command(timer, p2, map);
 
         // print the new map
         system("clear");
         print_map(map);
 
         // check the state of the game
-        if (!check_game())
+        if (!check_game(map, timer))
             break;
+        //increment timer
+        ++timer;
     }
     system("clear");
-    end();
 
     return 0;
 }
 
 bool Player::place(const v_index index, vector<char> &map)
 {
-    if(index) {
+    if(index != -1 && map[index] != 'O' && map[index] != 'X') {
         map[index] = getChess();
         return 1;
     }
@@ -40,47 +45,81 @@ bool Player::place(const v_index index, vector<char> &map)
 
 void print_map(const vector<char> &map)
 {
-    auto it = map.begin();
-    char page[18][18];
-    for (int i = 0; i != 18; ++i)
-        for (int j = 0; j != 18; ++j)
-            page[i][j] = ' ';
+    cout << "     |     |     " << endl;
+    	cout << "  " << map[0] << "  |  " << map[1] << "  |  " << map[2] << endl;
 
-    for (int i = 0; i != 18; ++i) {
-        for (int j = 0; j != 18; ++j) {
-            if ((j + 1) % 6 == 0 && j != 17 && (i + 1) % 6 != 0)
-                page[i][j] = '|';
-            else if((j + 1) % 6 == 0 && j != 17 && (i + 1) % 6 == 0)
-                page[i][j] = '+';
-            else if((i + 1) % 6 == 0 && i != 17 && (j + 1) % 6 != 0)
-                page[i][j] = '-';
-        }
+    	cout << "_____|_____|_____" << endl;
+    	cout << "     |     |     " << endl;
+
+    	cout << "  " << map[3] << "  |  " << map[4] << "  |  " << map[5] << endl;
+
+    	cout << "_____|_____|_____" << endl;
+    	cout << "     |     |     " << endl;
+
+    	cout << "  " << map[6] << "  |  " << map[7] << "  |  " << map[8] << endl;
+
+    	cout << "     |     |     " << endl << endl;
+}
+
+void get_command(int &timer, Player &p, vector<char> &map)
+{
+    v_index x;
+    string str = (timer % 2 == 0) ? "Player1: " : "Player2: ";
+    cout << "\n" << endl;
+    cout << "Type 0~8 " << str;
+    if ((cin >> x) && x < 9 && map[x] != 'O' && map[x] != 'X')
+        p.place(x, map);
+    else {
+        p.place(-1, map);
+        --timer;
     }
+}
+
+bool check_game(const vector<char> &map, const int timer)
+{
+    if (timer < 4)
+        return 1;
     for (int i = 0; i != 3; ++i) {
-        for (int j = 0; j != 3; ++j) {
-            page[6 * i + 2][6 * j + 2] = *it++;
+        if (map[i] == map[i+3] && map[i] == map[i+6]) {
+            print_win(map[i]);
+            return 0;
         }
     }
-    for (int i = 0; i != 18; ++i) {
-        for (int j = 0; j != 18; ++j) {
-            printf("%c", page[i][j]);
+
+    for (int i = 0; i <= 6; i += 3) {
+        if (map[i] == map[i+1] && map[i] == map[i+2]) {
+            print_win(map[i]);
+            return 0;
         }
-        cout << endl;
     }
-}
 
-void get_command()
-{
-    int x;
-    cin >> x;
-}
+    if (map[0] == map[4] && map[0] == map[8]) {
+        print_win(map[0]);
+        return 0;
+    }
 
-bool check_game()
-{
+    if (map[2] == map[4] && map[2] == map[6]) {
+        print_win(map[2]);
+        return 0;
+    }
+
+    if (timer == 8) {
+        char ch = 0;
+        cout << "\nNo one win~~" << endl;
+        cout << "Enter anything to quit" << endl;
+        cin >> ch;
+        return 0;
+    }
+
     return 1;
 }
 
-void end()
+void print_win(char ch)
 {
-    ;
+    if (ch == 'O')
+        cout << "\nPlayer 1 win!!!" << endl;
+    else
+        cout << "\nPlayer 2 win!!!" << endl;
+    cout << "Enter anything to quit" << endl;
+    cin >> ch;
 }
